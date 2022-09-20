@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class QuestionsController < ApplicationController
+  before_action :find_question, only: %i[update destroy show new edit]
+
   def index
     @questions = Question.all
   end
@@ -22,7 +24,7 @@ class QuestionsController < ApplicationController
   end
 
   def update
-    if question.update(question_params)
+    if @question.update(question_params)
       redirect_to @question
     else
       render :edit
@@ -30,15 +32,13 @@ class QuestionsController < ApplicationController
   end
 
   def destroy
-    question.destroy
+    @question.destroy
     redirect_to questions_path
   end
 
   private
 
-  helper_method :question
-
-  def question
+  def find_question
     @question ||= params[:id] ? Question.find(params[:id]) : Question.new
   end
 
