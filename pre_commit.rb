@@ -17,7 +17,7 @@ changed_files = changed_files.join(' ')
 exit(0) if changed_files.empty?
 
 success = system(%(
-  rubocop #{changed_files}
+  rubocop -A #{changed_files}
 ))
 
 STDIN.reopen('/dev/tty')

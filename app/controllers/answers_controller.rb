@@ -1,26 +1,25 @@
 # frozen_string_literal: true
 
 class AnswersController < ApplicationController
-  before_action :find_answer, only: %i[edit update]
-  before_action :find_question, only: %i[new index create]
-
-  def index
-    @answers = @question.answers
-  end
+  before_action :authenticate_user!, except: %i[index show]
+  before_action :find_answer, only: %i[edit show update]
+  before_action :find_question, only: %i[new create]
 
   def new
-    @question.answers.new
+    @answer = @question.answers.new
   end
 
   def create
     @answer = @question.answers.new(answer_params)
 
     if @answer.save
-      redirect_to question_answers_path(@question)
+      redirect_to question_path(@question), notice: 'Your answer successfully created'
     else
       render :new
     end
   end
+
+  def show; end
 
   def edit; end
 

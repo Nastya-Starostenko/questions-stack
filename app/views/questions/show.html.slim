@@ -1,0 +1,8 @@
+h1= @question.title
+p= @question.body
+
+div
+  - @answers.each do |answer|
+    div= answer.body
+
+= render partial: 'answers/form', locals: { answer: @question.answers.new }

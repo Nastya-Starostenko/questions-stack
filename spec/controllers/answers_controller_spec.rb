@@ -4,22 +4,21 @@ require 'rails_helper'
 
 RSpec.describe AnswersController, type: :controller do
   let(:question) { create(:question) }
+  let(:user) { create(:user) }
 
-  describe 'GET #index' do
-    let(:answers) { create_list(:answer, 3, question: question) }
+  before { login(user) }
 
-    before { get :index, params: { question_id: question } }
+  describe 'GET #show' do
+    let(:answer) { create(:answer, question: question) }
 
-    it 'populates an array of all answers for the question' do
-      expect(assigns(:answers)).to match_array(answers)
+    before { get :show, params: { id: answer } }
+
+    it 'assigns the requested answer to @answer' do
+      expect(assigns(:answer)).to eq(answer)
     end
 
-    it 'assigns the requested question to @question' do
-      expect(assigns(:question)).to eq(question)
-    end
-
-    it 'renders index view' do
-      expect(response).to render_template :index
+    it 'renders show view' do
+      expect(response).to render_template :show
     end
   end
 
@@ -42,7 +41,7 @@ RSpec.describe AnswersController, type: :controller do
 
       it 'redirects to index view' do
         request
-        expect(response).to redirect_to question_answers_path(assigns(:question))
+        expect(response).to redirect_to question_path(assigns(:question))
       end
     end
 
@@ -104,7 +103,7 @@ RSpec.describe AnswersController, type: :controller do
       it 'does not change question attributes' do
         question.reload
 
-        expect(question.body).to eq 'MyText'
+        expect(question.body).to eq question.body
       end
 
       it 're-render edit view' do

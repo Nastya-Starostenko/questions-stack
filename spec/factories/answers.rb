@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :answer do
-    body { 'MyText' }
+    body { Faker::Lorem.sentence }
     association :question
   end
 
