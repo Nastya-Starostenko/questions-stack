@@ -18,7 +18,6 @@ class QuestionsController < ApplicationController
 
   def create
     @question = Question.new(question_params)
-
     if @question.save
       redirect_to @question, notice: 'Your question successfully created'
     else
@@ -35,8 +34,8 @@ class QuestionsController < ApplicationController
   end
 
   def destroy
-    @question.destroy
-    redirect_to questions_path
+    @question.destroy if @question.author == current_user
+    redirect_to questions_path, notice: 'Your question successfully deleted'
   end
 
   private
@@ -46,6 +45,6 @@ class QuestionsController < ApplicationController
   end
 
   def question_params
-    params.require(:question).permit(:title, :body)
+    params.require(:question).permit(:title, :body).merge(author_id: current_user.id)
   end
 end

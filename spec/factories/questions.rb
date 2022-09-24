@@ -4,6 +4,7 @@ FactoryBot.define do
   factory :question do
     title { Faker::Lorem.word }
     body { Faker::Lorem.sentence }
+    author { create(:user) }
 
     trait :invalid do
       title { nil }

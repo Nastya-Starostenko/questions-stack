@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 class AnswersController < ApplicationController
-  before_action :authenticate_user!, except: %i[index show]
-  before_action :find_answer, only: %i[edit show update]
-  before_action :find_question, only: %i[new create]
+  before_action :authenticate_user!
+  before_action :find_answer, only: %i[edit update destroy]
+  before_action :find_question, only: %i[new create update destroy]
 
   def new
     @answer = @question.answers.new
@@ -19,23 +19,25 @@ class AnswersController < ApplicationController
     end
   end
 
-  def show; end
-
   def edit; end
 
   def update
-    @question = @answer.question
     if @answer.update(answer_params)
-      redirect_to question_answers_path(@question)
+      redirect_to question_path(@question)
     else
       render :edit
     end
   end
 
+  def destroy
+    @answer.destroy if @answer.author == current_user
+    redirect_to question_path(@question), notice: 'Your answer successfully deleted'
+  end
+
   private
 
   def find_question
-    @question ||= Question.find(params[:question_id])
+    @question ||= params[:question_id].present? ? Question.find(params[:question_id]) : @answer.question
   end
 
   def find_answer
@@ -43,6 +45,6 @@ class AnswersController < ApplicationController
   end
 
   def answer_params
-    params.require(:answer).permit(:body)
+    params.require(:answer).permit(:body).merge(author_id: current_user.id)
   end
 end

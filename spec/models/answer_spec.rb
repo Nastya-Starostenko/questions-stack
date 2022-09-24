@@ -7,6 +7,7 @@ RSpec.describe Answer, type: :model do
 
   describe 'relations' do
     it { is_expected.to belong_to(:question) }
+    it { is_expected.to belong_to(:author).class_name('User') }
   end
 
   describe 'validations' do

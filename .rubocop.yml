@@ -7,6 +7,7 @@ AllCops:
   TargetRubyVersion: 2.7.1
   Exclude:
     - 'db/schema.rb'
+    - db/**
 
 Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: true
@@ -279,3 +280,7 @@ RSpec/EmptyExampleGroup:
 
 Rails/UniqueValidationWithoutIndex:
   Enabled: true
+
+RSpec/Capybara/FeatureMethods:
+  Exclude:
+    - 'spec/features/**/**/*.rb'

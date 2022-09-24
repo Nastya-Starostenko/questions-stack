@@ -8,20 +8,6 @@ RSpec.describe AnswersController, type: :controller do
 
   before { login(user) }
 
-  describe 'GET #show' do
-    let(:answer) { create(:answer, question: question) }
-
-    before { get :show, params: { id: answer } }
-
-    it 'assigns the requested answer to @answer' do
-      expect(assigns(:answer)).to eq(answer)
-    end
-
-    it 'renders show view' do
-      expect(response).to render_template :show
-    end
-  end
-
   describe 'GET #new' do
     before { get :new, params: { question_id: question } }
 
@@ -89,9 +75,9 @@ RSpec.describe AnswersController, type: :controller do
         expect(answer.body).to eq 'new body'
       end
 
-      it 'redirects to index view' do
+      it 'redirects to index show question' do
         request
-        expect(response).to redirect_to question_answers_path(assigns(:question))
+        expect(response).to redirect_to question_path(assigns(:question))
       end
     end
 
@@ -109,6 +95,19 @@ RSpec.describe AnswersController, type: :controller do
       it 're-render edit view' do
         expect(response).to render_template :edit
       end
+    end
+  end
+
+  describe 'DELETE #destroy' do
+    let!(:answer) { create(:answer, question: question, author: user) }
+
+    it 'deletes answer' do
+      expect { delete :destroy, params: { id: answer } }.to change(Answer, :count).by(-1)
+    end
+
+    it 'redirects to show question' do
+      delete :destroy, params: { id: answer }
+      expect(response).to redirect_to question_path(assigns(:question))
     end
   end
 end
