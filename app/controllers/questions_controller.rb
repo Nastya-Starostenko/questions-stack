@@ -2,22 +2,26 @@
 
 class QuestionsController < ApplicationController
   before_action :authenticate_user!, except: %i[index show]
-  before_action :find_question, only: %i[update destroy show new edit]
 
   def index
     @questions = Question.all
   end
 
   def show
+    @question = Question.find(params[:id])
     @answers = @question.answers
   end
 
-  def new; end
+  def new
+    @question = Question.new
+  end
 
-  def edit; end
+  def edit
+    @question = Question.find(params[:id])
+  end
 
   def create
-    @question = Question.new(question_params)
+    @question = Question.new(question_params.merge(author_id: current_user.id))
     if @question.save
       redirect_to @question, notice: 'Your question successfully created'
     else
@@ -26,6 +30,7 @@ class QuestionsController < ApplicationController
   end
 
   def update
+    @question = Question.find(params[:id])
     if @question.update(question_params)
       redirect_to @question
     else
@@ -34,17 +39,14 @@ class QuestionsController < ApplicationController
   end
 
   def destroy
+    @question = Question.find(params[:id])
     @question.destroy if @question.author == current_user
     redirect_to questions_path, notice: 'Your question successfully deleted'
   end
 
   private
 
-  def find_question
-    @question ||= params[:id] ? Question.find(params[:id]) : Question.new
-  end
-
   def question_params
-    params.require(:question).permit(:title, :body).merge(author_id: current_user.id)
+    params.require(:question).permit(:title, :body)
   end
 end

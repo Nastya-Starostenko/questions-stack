@@ -77,7 +77,7 @@ RSpec.describe AnswersController, type: :controller do
 
       it 'redirects to index show question' do
         request
-        expect(response).to redirect_to question_path(assigns(:question))
+        expect(response).to redirect_to question_path(question)
       end
     end
 
