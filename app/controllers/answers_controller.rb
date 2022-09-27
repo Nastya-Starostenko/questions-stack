@@ -1,17 +1,20 @@
 # frozen_string_literal: true
 
 class AnswersController < ApplicationController
-  def index
-    @answers = question.answers
+  before_action :authenticate_user!
+  before_action :find_answer, only: %i[edit update destroy]
+
+  def new
+    @question = Question.find(params[:question_id])
+    @answer = @question.answers.new
   end
 
-  def new; end
-
   def create
-    @answer = question.answers.new(answer_params)
+    @question = Question.find(params[:question_id])
+    @answer = @question.answers.new(answer_params.merge(author_id: current_user.id))
 
     if @answer.save
-      redirect_to question_answers_path(question)
+      redirect_to question_path(@question), notice: 'Your answer successfully created'
     else
       render :new
     end
@@ -20,23 +23,23 @@ class AnswersController < ApplicationController
   def edit; end
 
   def update
-    if answer.update(answer_params)
-      redirect_to question_answers_path(question)
+    if @answer.update(answer_params)
+      redirect_to question_path(@answer.question)
     else
       render :edit
     end
   end
 
-  private
-
-  helper_method :question, :answer
-
-  def question
-    @question ||= params[:question_id] ? Question.find(params[:question_id]) : answer.question
+  def destroy
+    @question = @answer.question
+    @answer.destroy if @answer.author == current_user
+    redirect_to question_path(@question), notice: 'Your answer successfully deleted'
   end
 
-  def answer
-    @answer ||= params[:id] ? Answer.find(params[:id]) : question.answers.new
+  private
+
+  def find_answer
+    @answer ||= Answer.find(params[:id])
   end
 
   def answer_params

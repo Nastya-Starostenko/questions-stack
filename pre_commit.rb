@@ -11,7 +11,7 @@ changed_files = changed_files.map { |f| f.split(' ')[1] }
 
 changed_files -= (unstaged_files - changed_files)
 
-changed_files = changed_files.select { |file_name| File.extname(file_name) == '.rb' }
+changed_files = changed_files.select { |file_name| File.extname(file_name) == '.rb' && !file_name.include?('schema') }
 changed_files = changed_files.join(' ')
 
 exit(0) if changed_files.empty?

@@ -2,8 +2,9 @@
 
 FactoryBot.define do
   factory :answer do
-    body { 'MyText' }
+    body { Faker::Lorem.sentence }
     association :question
+    author { create(:user) }
   end
 
   trait :invalid do

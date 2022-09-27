@@ -4,6 +4,9 @@ require 'rails_helper'
 
 RSpec.describe QuestionsController, type: :controller do
   let(:question) { create(:question) }
+  let(:user) { create(:user) }
+
+  before { login(user) }
 
   describe 'GET #index' do
     let(:questions) { create_list(:question, 3) }
@@ -20,10 +23,16 @@ RSpec.describe QuestionsController, type: :controller do
   end
 
   describe 'GET #show' do
+    let(:answers) { create_list(:answer, 3, question: question) }
+
     before { get :show, params: { id: question } }
 
     it 'renders show view' do
       expect(response).to render_template :show
+    end
+
+    it 'populates an array of all answers for the question' do
+      expect(assigns(:answers)).to match_array(answers)
     end
   end
 
@@ -99,8 +108,8 @@ RSpec.describe QuestionsController, type: :controller do
       it 'does not change question attributes' do
         question.reload
 
-        expect(question.title).to eq 'MyString'
-        expect(question.body).to eq 'MyText'
+        expect(question.title).to eq question.title
+        expect(question.body).to eq question.body
       end
 
       it 're-render edit view' do
@@ -110,7 +119,7 @@ RSpec.describe QuestionsController, type: :controller do
   end
 
   describe 'DELETE #destroy' do
-    let!(:question) { create(:question) }
+    let!(:question) { create(:question, author: user) }
 
     it 'deletes question' do
       expect { delete :destroy, params: { id: question } }.to change(Question, :count).by(-1)

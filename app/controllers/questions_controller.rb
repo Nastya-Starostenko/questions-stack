@@ -1,28 +1,37 @@
 # frozen_string_literal: true
 
 class QuestionsController < ApplicationController
+  before_action :authenticate_user!, except: %i[index show]
+
   def index
     @questions = Question.all
   end
 
-  def show; end
+  def show
+    @question = Question.find(params[:id])
+    @answers = @question.answers
+  end
 
-  def new; end
+  def new
+    @question = Question.new
+  end
 
-  def edit; end
+  def edit
+    @question = Question.find(params[:id])
+  end
 
   def create
-    @question = Question.new(question_params)
-
+    @question = Question.new(question_params.merge(author_id: current_user.id))
     if @question.save
-      redirect_to @question
+      redirect_to @question, notice: 'Your question successfully created'
     else
       render :new
     end
   end
 
   def update
-    if question.update(question_params)
+    @question = Question.find(params[:id])
+    if @question.update(question_params)
       redirect_to @question
     else
       render :edit
@@ -30,17 +39,12 @@ class QuestionsController < ApplicationController
   end
 
   def destroy
-    question.destroy
-    redirect_to questions_path
+    @question = Question.find(params[:id])
+    @question.destroy if @question.author == current_user
+    redirect_to questions_path, notice: 'Your question successfully deleted'
   end
 
   private
-
-  helper_method :question
-
-  def question
-    @question ||= params[:id] ? Question.find(params[:id]) : Question.new
-  end
 
   def question_params
     params.require(:question).permit(:title, :body)
