@@ -8,24 +8,16 @@ RSpec.describe AnswersController, type: :controller do
 
   before { login(user) }
 
-  describe 'GET #new' do
-    before { get :new, params: { question_id: question } }
-
-    it 'renders new view' do
-      expect(response).to render_template :new
-    end
-  end
-
   describe 'POST #create' do
     let(:request) { post :create, params: { question_id: question, answer: answer_params } }
     let(:answer_params) { attributes_for(:answer) }
 
     context 'with valid attributes' do
-      it 'saves a new question in the db' do
+      it 'saves a new answer in the db' do
         expect { request }.to change(Answer, :count).by(1)
       end
 
-      it 'redirects to index view' do
+      it 'redirects to question' do
         request
         expect(response).to redirect_to question_path(assigns(:question))
       end
@@ -40,7 +32,7 @@ RSpec.describe AnswersController, type: :controller do
 
       it 're-render new view' do
         request
-        expect(response).to render_template :new
+        expect(response).to render_template 'questions/show'
       end
     end
   end

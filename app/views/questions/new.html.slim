@@ -1,8 +1,4 @@
-= render 'shared/errors', resource: @question
-
-= form_with model: @question, local: true do |f|
-  = f.label :title
-  = f.text_field :title
-  = f.label :body
-  = f.text_area :body
-  = f.submit 'Ask'
+- model_class = Question
+.page-header
+  h1=t '.title', :default => [:'helpers.titles.new', 'New %{model}'], :model => model_class.model_name.human.titleize
+= render :partial => "form"
