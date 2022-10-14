@@ -4,20 +4,11 @@ class AnswersController < ApplicationController
   before_action :authenticate_user!
   before_action :find_answer, only: %i[edit update destroy]
 
-  def new
-    @question = Question.find(params[:question_id])
-    @answer = @question.answers.new
-  end
-
   def create
     @question = Question.find(params[:question_id])
     @answer = @question.answers.new(answer_params.merge(author_id: current_user.id))
 
-    if @answer.save
-      redirect_to question_path(@question), notice: 'Your answer successfully created'
-    else
-      render :new
-    end
+    redirect_to question_path(@question), notice: 'Your answer successfully created' if @answer.save
   end
 
   def edit; end

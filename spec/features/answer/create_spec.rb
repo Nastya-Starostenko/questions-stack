@@ -10,7 +10,7 @@ feature 'User can create answer', "
   given(:user) { create(:user) }
   given!(:question) { create(:question, :with_answers) }
 
-  describe 'Authenticated user ' do
+  describe 'Authenticated user ', js: true do
     background do
       sign_in user
 
@@ -18,10 +18,14 @@ feature 'User can create answer', "
     end
 
     scenario 'answer to a question' do
-      fill_in 'Body', with: 'text text text'
+      fill_in 'Your answer', with: 'text text text'
       click_on 'Answer'
 
+      expect(page).to have_current_path question_path(question), ignore_query: true
       expect(page).to have_content 'Your answer successfully created'
+      within '.answers' do
+        expect(page).to have_content 'text text text'
+      end
     end
 
     scenario 'answer to a question with errors' do
@@ -34,7 +38,7 @@ feature 'User can create answer', "
   scenario 'Unauthenticated user tries to answer to a question' do
     visit question_path(question)
 
-    fill_in 'Body', with: 'text text text'
+    fill_in 'Your answer', with: 'text text text'
     click_on 'Answer'
 
     expect(page).to have_content 'You need to sign in or sign up before continuing.'
