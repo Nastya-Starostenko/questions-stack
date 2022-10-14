@@ -8,6 +8,3 @@ import "jquery_ujs"
 import "twitter/bootstrap"
 
 
-import $ from 'jquery';
-global.$ = jQuery;
-
